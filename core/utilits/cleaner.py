@@ -1,7 +1,8 @@
-"""cleaner.py 
+"""cleaner.py
 
 Позволяет очистить терминал.
 """
+
 import os
 import sys
 
@@ -27,4 +28,3 @@ def clean() -> None:
         )
 
     os.system(clear_command)
-        

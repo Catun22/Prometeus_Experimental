@@ -7,60 +7,41 @@
     - Запускает главный цикл программы
 """
 
-from core.menu import Menu, MenuStructure  # MenuStructure для аннотации
-from core.lib.actions import ACTIONS
+from rich.console import Console
+
+from core.menu import Menu
+from core.lib.actions import CLI
 from core.lib.prompts import Prompts
+from core.utilits.opener_json import open_json
 from core.utilits.cleaner import clean
 from core.utilits.installer import install
 
 
+menu_name = "МЕНЮ"
+menu_config = "menu.json"
+
+
 def main():
-    """Основная функция."""
-    action = ACTIONS
-    # menu_structure можно спрятать в другом файле .py или .json.
-    # Для наглядности оставил тут.
-    menu_structure: MenuStructure = {
-        "Работать": {
-            "Учиться": {
-                "Учить программирование": {
-                    "Python": {
-                        "Создать тему": "create_topic",
-                        "Создать библиотеку": "create_library",
-                    },
-                    "JS": {"Создать тему": "create_js_topic"},
-                    "HTML": {"Создать тему": "create_html_topic"},
-                    "CSS": {"Создать тему": "create_css_topic"},
-                },
-                "Учить языки": {
-                    "Английский": "learn_english",
-                    "Французский": "learn_french",
-                    "Немецкий": "learn_german",
-                    "Испанский": "learn_spanish",
-                },
-            }
-        },
-        "Отдыхать": {
-            "Смотреть фильм": "watch_movie",
-            "Слушать музыку": "listen_music",
-            "Играть": "play_game",
-            "Читать книгу": {
-                "Открыть книгу": "open_book",
-                "Написать рецензию": "write_book",
-            },
-        },
-        "Vk@lю4u;т%ь Cєr#+βє-яυ$?":{
-            "Поврежденный фаа--+^ааа$%@__+*":"activate_cerberus"
-        }
+    welcome()
+    set_menu_cli()
+
+
+def welcome():
+    console = Console()
+    clean()
+    install()
+    console.print(Prompts.welcome)
+
+
+def set_menu_cli():
+    cli = CLI()
+    actions_config = open_json(cli.actions_path)
+    ACTIONS = {
+        key: getattr(cli, method_name) for key, method_name in actions_config.items()
     }
 
-    clean()  # Чистит терминал
-    install()  # Установка colorama для Windows при необходимости (можно убрать)
-    clean()
-
-    print(Prompts.welcome)  # Приветствие пользователя
-
-    # Вызываем меню
-    menu = Menu("  МЕНЮ", menu_structure, action)
+    menu_structure = open_json(menu_config)
+    menu = Menu(menu_name, menu_structure, ACTIONS)
     menu.start()
 
 

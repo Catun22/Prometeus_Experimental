@@ -1,1 +1,2 @@
-colorama
+colorama    # По желанию
+rich        # Обязательно

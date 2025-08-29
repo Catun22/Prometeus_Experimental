@@ -1,0 +1,26 @@
+{
+  "paths": {
+    "topic": "Storage/Topics/Chapter",
+    "library": "Storage/Library/Libraries",
+    "html": "Storage/HTML_Topics/Chapter",
+    "css": "Storage/CSS_Topics/Chapter",
+    "js": "Storage/JS_Topics/Chapter",
+    "english": "Storage/Languages/English",
+    "german": "Storage/Languages/German",
+    "french": "Storage/Languages/French",
+    "spanish": "Storage/Languages/Spanish",
+    "recipe": "Storage/Recipe",
+    "worldview": "Storage/Worldview",
+    "books": "Storage/Books",
+    "history": "Storage/History",
+    "philosophy": "Storage/Philosophy",
+    "socialscience": "Storage/SocialScience",
+    "economy": "Storage/Economy",
+    "law": "Storage/Law",
+    "physics": "Storage/Physics",
+    "astronomy": "Storage/Astronomy",
+
+    "dictionary": "Storage/Languages/Dictionary/dictionary.md",
+    "backup": "Storage/Languages/Dictionary/Backup"
+  }
+}
