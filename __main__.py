@@ -18,10 +18,6 @@ from core.utilits.installer import install
 
 
 menu_name = "МЕНЮ"
-file_path = __file__
-dir_path = os.path.dirname(file_path)
-menu_config = os.path.join(dir_path, "menu.json")
-
 
 def main():
     welcome()
@@ -42,11 +38,10 @@ def set_menu_cli():
         key: getattr(cli, method_name) for key, method_name in actions_config.items()
     }
 
-    menu_structure = open_json(menu_config)
+    menu_structure = open_json(cli.menu_path)
     menu = Menu(menu_name, menu_structure, ACTIONS)
     menu.start()
 
 
 if __name__ == "__main__":
     main()
-
