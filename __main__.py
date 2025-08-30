@@ -18,7 +18,9 @@ from core.utilits.installer import install
 
 
 menu_name = "МЕНЮ"
-menu_config = "menu.json"
+file_path = __file__
+dir_path = os.path.dirname(file_path)
+menu_config = os.path.join(dir_path, "menu.json")
 
 
 def main():
@@ -47,3 +49,4 @@ def set_menu_cli():
 
 if __name__ == "__main__":
     main()
+
