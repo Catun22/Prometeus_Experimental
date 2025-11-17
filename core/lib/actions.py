@@ -71,6 +71,7 @@ class CLI:
             "economy": os.path.join(self.base_path, directory, "Economy"),
             "law": os.path.join(self.base_path, directory, "Law"),
             "physics": os.path.join(self.base_path, directory, "Physics"),
+            "hydrogasdynamics": os.path.join(self.base_path, directory, "Hydrogasdynamics"),
             "astronomy": os.path.join(self.base_path, directory, "Astronomy")
         }
         
@@ -113,11 +114,36 @@ class CLI:
         item.set_default_path(self.paths[path_key])
         path_name = self.__console.input(Prompts.arrows) or None
         item.start(path_name)
+        file_path = item.get_path()
+        self.__console.print("\nОткрыть файл сейчас (y/n)?")
+        if self.__console.input(Prompts.arrows).strip().lower() == "y":
+            self.__support_open_app(file_path)
 
     def look_item(self, *, cls: Type[TemplateClass], path_key: str):
         item = cls() # Создаем новый экземпляр класса.
-        files = item.get_available_files(self.paths[path_key]) # Сюда тоже следует закинуть путь по дефолту
-        self.__support_md_loop(files)
+        directory = self.paths[path_key]
+        md_files = item.get_available_files(directory) # Сюда тоже следует закинуть путь по дефолту
+        if not md_files:
+            self.__console.print("Файлы не найдены")
+            return
+        self.__support_md_loop(md_files)
+        while True:
+            self.__console.print("\nВведите номер файла для открытия или '0' для выхода:")
+            choice = self.__console.input(Prompts.arrows).strip()
+
+            if choice == "0":
+                break
+
+            if not choice.isdigit():
+                self.__console.print("Введите корректное число")
+                continue
+
+            choice = int(choice)
+            if 1 <= choice <= len(md_files):
+                filepath = os.path.join(directory, md_files[choice - 1])
+                self.__support_open_app(filepath)  # Открываем выбранный файл
+            else:
+                self.__console.print("Неверный выбор")
 
     def load_paths(self):
 
@@ -165,16 +191,75 @@ class CLI:
         else:
             self.__console.print(PromptSite.functional)
     
-    def __support_open_app(self, command: str):
-        """Вспомогательный метод для открытия приложений на устройстве"""
+    def __support_open_app(self, filepath: str) -> None:
+        """Открывает файл в зависимости от ОС. На Linux позволяет выбрать редактор."""
         if self.__windows:
-            subprocess.Popen(f'start "" "{command}"', shell=True)
-        elif self.__darwin:
-            subprocess.Popen(f'open -a "{command}"', shell=True)
+            try:
+                subprocess.Popen(f'start "" "{filepath}"', shell=True)
+            except PermissionError:
+                self.__console.print("[red]Ошибка доступа при открытии файла[/red]")
+
+        elif self.__darwin:  # macOS
+            try:
+                subprocess.Popen(["open", filepath])
+            except PermissionError:
+                self.__console.print("[red]Ошибка доступа при открытии файла[/red]")
+
         elif self.__linux:
-            subprocess.Popen([command])
+            self.__console.print("\n[bold]Открыть через системное приложение (xdg-open)?[/bold] [green]y[/green]/[red]n[/red]")
+            choice = self.__console.input(Prompts.arrows).strip().lower()
+
+            if choice == "y":
+                try:
+                    subprocess.Popen(["xdg-open", filepath])
+                except subprocess.CalledProcessError:
+                    self.__console.print("Не удалось открыть через xdg-open, используйте редактор")
+                except Exception as e:
+                    self.__console.print(f"[red]Ошибка: {e}[/red]")
+            else:
+                self.__redactor_helper_linux(filepath)
+
         else:
-            self.__console.print(PromptSite.functional)
+            self.__console.print("[red]Ваш тип ОС не поддерживается[/red]")
+
+    def __redactor_helper_linux(self, filepath: str) -> None:
+        """Позволяет выбрать редактор для открытия файла вручную на Linux."""
+        default_editors = ["code", "gedit", "nano", "vim", "nvim", "kate", "micro"]
+
+        self.__console.print("\n[bold]Выберите редактор:[/bold]")
+        for i, editor in enumerate(default_editors, 1):
+            self.__console.print(f"{i}. {editor}")
+        self.__console.print(f"{len(default_editors) + 1}. Ввести свой вручную")
+        
+        choice = self.__console.input(Prompts.arrows)
+
+        # Проверка выбора
+        if not choice.isdigit():
+            self.__console.print("[red]Ошибка: введите число[/red]")
+            return
+
+        choice = int(choice)
+
+        if 1 <= choice <= len(default_editors):
+            editor = default_editors[choice - 1]
+        elif choice == len(default_editors) + 1:
+            editor = self.__console.input("Введите имя или полный путь редактора: ")
+        else:
+            self.__console.print("[red]Некорректный выбор[/red]")
+            return
+
+        # Проверка наличия программы
+        if shutil.which(editor) is None:
+            self.__console.print(f"[red]Редактор '{editor}' не найден в системе[/red]")
+            return
+
+        # Попытка запуска редактора
+        try:
+            subprocess.Popen([editor, filepath])
+            self.__console.print(f"[green]Открываю через '{editor}'...[/green]")
+        except Exception as e:
+            self.__console.print(f"[red]Не удалось открыть редактор: {e}[/red]")
+
     ###########################################################
     def open_page(self):
         """Метод, открывающий страницу в браузере. Необходим ввод ссылки пользователем"""
@@ -405,8 +490,16 @@ class CLI:
     def look_physics(self):
         self.look_item(cls=PhysicsTemplate, path_key="physics")
     ###########################################################
+    def hydrogasdynamics_topic(self):
+        """Создает шаблон для изучения гидрогазодинамики
+        """
+        self.create_item(cls=Hydrogasdynamics, title_prompt=Prompts.theme, path_key="hydrogasdynamics")
+
+    def look_hydrogasdynamics(self):
+        self.look_item(cls=Hydrogasdynamics, path_key="hydrogasdynamics")
+
     def astronomy_topic(self):
-        """Создает шаблон для конспектирования книг
+        """Создает шаблон для изучения астрономии
         """
         self.create_item(cls=AstronomyTemplate, title_prompt=Prompts.theme, path_key="astronomy")
 
