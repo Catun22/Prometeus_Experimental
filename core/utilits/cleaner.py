@@ -1,30 +1,33 @@
 """cleaner.py
 
-Позволяет очистить терминал.
+Allows you to clear the terminal.
 """
 
 import os
 import sys
 
 
+def check_os() -> str:
+    """Check user's OS
+
+    Returns:
+        str: The name of the command to clear the terminal.
+    """
+    if sys.platform.startswith("win"):
+        return "cls"
+    if sys.platform.startswith("darwin"):
+        return "clear"
+    if sys.platform.startswith("linux"):
+        return "clear"
+    return ""
+
 def clean() -> None:
-    """Чистит терминал от текста"""
-
-    is_windows = sys.platform.startswith("win")
-    is_mac = sys.platform.startswith("darwin")
-    is_linux = sys.platform.startswith("linux")
-
-    clear_command = ""
-
-    if is_windows:
-        clear_command = "cls"
-    elif is_mac:
-        clear_command = "clear"
-    elif is_linux:
-        clear_command = "clear"
+    """Clears the terminal of unnecessary text."""
+    clear_command = check_os()
+    if clear_command:
+        os.system(clear_command)
     else:
         print(
-            "Полный фунционал программы поддерживается только на: Linux, macOS, Windows."
+            "The full functionality of the program is supported only on: Linux, macOS, Windows."
         )
-
-    os.system(clear_command)
+    

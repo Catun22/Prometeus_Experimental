@@ -1,0 +1,7 @@
+{
+  "paths": {
+    "topic": "Storage/Topics",
+    "law": "Storage/Law",
+    "lib": "Storage/Lib"
+  }
+}

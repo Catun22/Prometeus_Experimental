@@ -1,0 +1,16 @@
+{
+    "open_page": "open_page",
+    "open_approved_site": "open_approved_site",
+
+    "create_topic": "create_topic",
+    "look_topic": "look_topic",
+    "law_topic": "law_topic",
+    "look_law": "look_law",
+
+    "find_file": "find_file",
+
+    "open_menu_settings": "_open_menu_settings",
+    "open_config_settings": "_open_config_settings",
+    "open_actions_settings": "_open_actions_settings",
+    "open_colors_settings": "_open_colors_settings"
+}

@@ -1,16 +1,15 @@
 """installer.py
 
-Позволяет установить colorama для Windows.
+A module that installs colorama for Windows.
 """
-
 import sys
 import ctypes
 
 
 def ansi_code_fixer() -> None:
-    """Позволяет отоброжать ANSI последовательности через системные ресурсы Windows API"""
+    """Allows displaying ANSI sequences using Windows API system resources."""
     # Загружаем библиотеку kernel32.dll (Windows API)
-    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)  
 
     # Константы Windows API
     STD_OUTPUT_HANDLE = -11  # Дескриптор стандартного вывода
@@ -19,14 +18,14 @@ def ansi_code_fixer() -> None:
     )
 
     # Явно задаём сигнатуры функций
-    kernel32.GetStdHandle.argtypes = [ctypes.c_ulong]
+    kernel32.GetStdHandle.argtypes = [ctypes.c_ulong]  
     kernel32.GetStdHandle.restype = ctypes.c_void_p
 
-    kernel32.GetConsoleMode.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_ulong)]
-    kernel32.GetConsoleMode.restype = ctypes.c_int
+    kernel32.GetConsoleMode.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_ulong)] 
+    kernel32.GetConsoleMode.restype = ctypes.c_int 
 
-    kernel32.SetConsoleMode.argtypes = [ctypes.c_void_p, ctypes.c_ulong]
-    kernel32.SetConsoleMode.restype = ctypes.c_int
+    kernel32.SetConsoleMode.argtypes = [ctypes.c_void_p, ctypes.c_ulong]  
+    kernel32.SetConsoleMode.restype = ctypes.c_int 
 
     # Проверяем версию Windows
     if sys.platform == "win32":
@@ -59,7 +58,7 @@ def ansi_code_fixer() -> None:
 
 
 def install() -> None:
-    """Устанавливает библиотку colorama"""
+    """Installs the colorama library."""
 
     prompt = (
         "Библиотека colorama не установлена.\n"
